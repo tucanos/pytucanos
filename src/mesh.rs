@@ -1,3 +1,4 @@
+#![allow(clippy::useless_conversion)]
 use crate::{
     geometry::{LinearGeometry2d, LinearGeometry3d},
     to_numpy_1d, to_numpy_2d,
