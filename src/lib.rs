@@ -2,9 +2,9 @@ mod geometry;
 mod mesh;
 mod parallel;
 mod remesher;
-use log::warn;
-use numpy::{PyArray, PyArray1, PyArray2, PyArrayMethods};
+use numpy::{PyArray, PyArray1, PyArray2, PyArrayMethods, PyReadonlyArray1};
 use pyo3::{
+    exceptions::PyRuntimeError,
     pyfunction, pymodule,
     types::{PyModule, PyModuleMethods},
     wrap_pyfunction, Bound, PyResult, Python,
@@ -19,19 +19,33 @@ fn to_numpy_2d<T: numpy::Element>(py: Python<'_>, vec: Vec<T>, m: usize) -> Boun
     PyArray::from_vec(py, vec).reshape([n / m, m]).unwrap()
 }
 
+/// Get the current thread affinity
 #[must_use]
 #[pyfunction]
-pub fn set_thread_affinity(n: usize) -> usize {
-    let bound_cores = affinity::get_thread_affinity().unwrap();
-    if bound_cores.len() == 1 {
-        let cores = (bound_cores[0]..bound_cores[0] + n).collect::<Vec<_>>();
-        warn!("Set thread affinity: {cores:?}");
-        affinity::set_thread_affinity(cores).unwrap();
-    } else if bound_cores.len() != n {
-        warn!("bound cores: {bound_cores:?}");
+pub fn get_thread_affinity<'py>(py: Python<'py>) -> PyResult<Bound<'py, PyArray1<usize>>> {
+    let bound_cores = affinity::get_thread_affinity();
+    if let Err(err) = bound_cores {
+        Err(PyRuntimeError::new_err(err.to_string()))
+    } else {
+        Ok(to_numpy_1d(py, bound_cores.unwrap()))
     }
+}
 
-    rayon::current_num_threads()
+/// Set the thread affinity and return the number of rayon threads
+#[must_use]
+#[pyfunction]
+pub fn set_thread_affinity(cores: PyReadonlyArray1<usize>) -> PyResult<usize> {
+    let tmp = cores.as_slice();
+    if let Err(err) = tmp {
+        Err(PyRuntimeError::new_err(err.to_string()))
+    } else {
+        let res = affinity::set_thread_affinity(tmp.unwrap());
+        if let Err(err) = res {
+            Err(PyRuntimeError::new_err(err.to_string()))
+        } else {
+            Ok(rayon::current_num_threads())
+        }
+    }
 }
 
 /// Python bindings for pytucanos
@@ -39,6 +53,7 @@ pub fn set_thread_affinity(n: usize) -> usize {
 #[pyo3(name = "_pytucanos")]
 pub fn pytucanos(_py: Python<'_>, m: &Bound<PyModule>) -> PyResult<()> {
     pyo3_log::init();
+    m.add_function(wrap_pyfunction!(get_thread_affinity, m)?)?;
     m.add_function(wrap_pyfunction!(set_thread_affinity, m)?)?;
     m.add_class::<crate::mesh::Mesh33>()?;
     m.add_class::<crate::mesh::Mesh32>()?;
