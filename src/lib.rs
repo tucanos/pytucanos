@@ -20,9 +20,8 @@ fn to_numpy_2d<T: numpy::Element>(py: Python<'_>, vec: Vec<T>, m: usize) -> Boun
 }
 
 /// Get the current thread affinity
-#[must_use]
 #[pyfunction]
-pub fn get_thread_affinity<'py>(py: Python<'py>) -> PyResult<Bound<'py, PyArray1<usize>>> {
+pub fn get_thread_affinity(py: Python<'_>) -> PyResult<Bound<'_, PyArray1<usize>>> {
     let bound_cores = affinity::get_thread_affinity();
     if let Err(err) = bound_cores {
         Err(PyRuntimeError::new_err(err.to_string()))
@@ -32,7 +31,6 @@ pub fn get_thread_affinity<'py>(py: Python<'py>) -> PyResult<Bound<'py, PyArray1
 }
 
 /// Set the thread affinity and return the number of rayon threads
-#[must_use]
 #[pyfunction]
 pub fn set_thread_affinity(cores: PyReadonlyArray1<usize>) -> PyResult<usize> {
     let tmp = cores.as_slice();
