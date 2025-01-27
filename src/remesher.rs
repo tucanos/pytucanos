@@ -195,12 +195,14 @@ macro_rules! create_remesher {
 
             /// Apply a maximum gradation to a metric field
             #[classmethod]
+            #[pyo3(signature = (mesh, m, beta, t=1.0/8.0, n_iter=10))]
             pub fn apply_metric_gradation<'py>(
                 _cls: &Bound<'_, PyType>,
                 py: Python<'py>,
                 mesh: &$mesh,
                 m: PyReadonlyArray2<f64>,
                 beta: f64,
+                t: f64,
                 n_iter: Idx,
             ) -> PyResult<Bound<'py, PyArray2<f64>>> {
                 if m.shape()[0] != mesh.mesh.n_verts() as usize {
@@ -212,7 +214,7 @@ macro_rules! create_remesher {
 
                 let m = m.as_slice().unwrap();
                 let mut m: Vec<_> = m.chunks($metric::N).map(|x| $metric::from_slice(x)).collect();
-                let res = mesh.mesh.apply_metric_gradation(&mut m, beta, n_iter);
+                let res = mesh.mesh.apply_metric_gradation(&mut m, beta, t, n_iter);
                 match res {
                     Ok(_) => {
                         let m: Vec<_> = m.iter().cloned().flatten().collect();
