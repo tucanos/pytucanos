@@ -11,7 +11,7 @@ crate-type = ["cdylib"]
 log = "0.4.22"
 tucanos = { git = "https://github.com/tucanos/tucanos.git", rev = "2834243" }
 numpy = "0.23"
-pyo3 = { version = "0.23", features = ["extension-module", "multiple-pymethods"] }
+pyo3 = { version = "0.24", features = ["extension-module", "multiple-pymethods"] }
 pyo3-log = "0.12"
 
 [features]
