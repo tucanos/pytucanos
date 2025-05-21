@@ -49,7 +49,7 @@ pub fn set_thread_affinity(cores: PyReadonlyArray1<usize>) -> PyResult<usize> {
 
 /// Python bindings for pytucanos
 #[pymodule]
-#[pyo3(name = "_pytucanos")]
+#[pyo3(name = "pytucanos")]
 pub fn pytucanos(_py: Python<'_>, m: &Bound<PyModule>) -> PyResult<()> {
     pyo3_log::init();
     m.add_function(wrap_pyfunction!(get_thread_affinity, m)?)?;

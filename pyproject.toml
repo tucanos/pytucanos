@@ -1,4 +1,14 @@
 [build-system]
-requires = ["setuptools", "wheel", "setuptools-rust"]
-build-backend = "backend"
-backend-path = ["_custom_build"]
+requires = ["maturin>=1,<2"]
+build-backend = "maturin"
+
+[project]
+name = "pytucanos"
+dependencies = [
+  "numpy",
+  "matplotlib"
+]
+
+[tool.maturin]
+profile = "release"
+features = ["metis", "scotch"]
