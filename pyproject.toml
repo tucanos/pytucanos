@@ -11,4 +11,4 @@ dependencies = [
 
 [tool.maturin]
 profile = "release"
-features = ["metis", "scotch"]
+# features = ["metis", "scotch"]
