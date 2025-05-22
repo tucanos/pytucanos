@@ -4,7 +4,7 @@ import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
 import logging
-from ._pytucanos import (
+from .pytucanos import (
     PySplitParams,
     PyCollapseParams,
     PySwapParams,
@@ -13,8 +13,8 @@ from ._pytucanos import (
     PyRemeshingStep,
     PyRemesherParams,
 )
-from ._pytucanos import Remesher2dIso, Remesher2dAniso, Remesher3dIso, Remesher3dAniso
-from ._pytucanos import (
+from .pytucanos import Remesher2dIso, Remesher2dAniso, Remesher3dIso, Remesher3dAniso
+from .pytucanos import (
     ParallelRemesher2dIso,
     ParallelRemesher2dAniso,
     ParallelRemesher3dIso,

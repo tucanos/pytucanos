@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from ._pytucanos import (
+from .pytucanos import (
     Mesh21,
     Mesh22,
     Mesh32,
